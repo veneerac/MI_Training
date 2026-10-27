@@ -19,3 +19,8 @@ These are the only third-party JARs the labs need. MI already ships with the JMS
 - `MySQL JDBC Driver/mysql-connector-j-8.2.0.jar`
 
 Restart MI after copying them.
+
+## Training plan and prerequisites
+
+- [4-day training plan](TRAINING_PLAN.md)
+- [Prerequisites (PDF)](docs/MI%204.6.0%20Training%20-%20Prerequisites.pdf)
