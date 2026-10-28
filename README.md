@@ -8,6 +8,7 @@ Files needed for the 4-day MI 4.6.0 training labs.
 | `ActiveMQ/client-jars-for-MI_HOME-lib/` | 6 JARs | The ActiveMQ client JARs taken from the pack above: activemq-broker, activemq-client, activemq-kahadb-store, hawtbuf, slf4j-api, activeio-core. Copy all of them to `MI_HOME/lib` and restart MI. |
 | `MySQL JDBC Driver/` | `mysql-connector-j-8.2.0.jar` | MySQL Connector/J 8.2.0, for MySQL 8.0 or later. Copy it to `MI_HOME/lib`. Driver class: `com.mysql.cj.jdbc.Driver`. |
 | `Hospital Backend/` | `Hospital-Service-JDK11-2.0.0.jar` | Sample Hospital backend used by the mediation labs. Run `java -jar Hospital-Service-JDK11-2.0.0.jar` (port 9090). Tested on JDK 21. Source code is in `source/` (build with `mvn package`). |
+| `ISO8583 Test Server/` | Test host, test client and libraries | ISO 8583 test host (port 5010) and test client for the ISO 8583 lab. See its README. |
 
 Requires JDK 21 (MI 4.6.0 is tested with JDK 21 and 25) and MySQL Server 8.0 or later.
 
