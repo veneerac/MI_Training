@@ -18,16 +18,19 @@
 
 package org.wso2.service.hospital;
 
+import com.google.gson.Gson;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.wso2.msf4j.Microservice;
 
 import java.util.Map;
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -77,6 +80,15 @@ public class HealthcareService implements Microservice {
     }
 
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/{hospitalId}/categories/{category}/reserve")
+    public Response reserveAppointmentJson(@PathParam("hospitalId") String hospitalId,
+                                           @PathParam("category") String category, HashMap<String, Object> body) {
+        return reserveAppointment(hospitalId, category, toJson(body));
+    }
+
+    @POST
+    @Consumes(MediaType.TEXT_PLAIN)
     @Path("/{hospitalId}/categories/{category}/reserve")
     public Response reserveAppointment(@PathParam("hospitalId") String hospitalId,
                                        @PathParam("category") String category, String body) {
@@ -129,6 +141,14 @@ public class HealthcareService implements Microservice {
     }
 
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/healthcare/payments")
+    public Response settlePaymentJson(HashMap<String, Object> body) {
+        return settlePayment(toJson(body));
+    }
+
+    @POST
+    @Consumes(MediaType.TEXT_PLAIN)
     @Path("/healthcare/payments")
     public Response settlePayment(String body) {
         JSONObject request = parse(body);
@@ -156,6 +176,14 @@ public class HealthcareService implements Microservice {
     }
 
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/{hospitalId}/categories/admin/doctor/newdoctor")
+    public Response addNewDoctorJson(@PathParam("hospitalId") String hospitalId, HashMap<String, Object> body) {
+        return addNewDoctor(hospitalId, toJson(body));
+    }
+
+    @POST
+    @Consumes(MediaType.TEXT_PLAIN)
     @Path("/{hospitalId}/categories/admin/doctor/newdoctor")
     public Response addNewDoctor(@PathParam("hospitalId") String hospitalId, String body) {
         if (!hospitals.containsKey(hospitalId)) {
@@ -202,6 +230,11 @@ public class HealthcareService implements Microservice {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    // MSF4J reads application/json bodies into a typed parameter, so JSON requests arrive as a map.
+    private static String toJson(Map<String, Object> body) {
+        return body == null ? "" : new Gson().toJson(body);
     }
 
     private static JSONObject parse(String body) {
