@@ -1,0 +1,593 @@
+{
+  "info": {
+    "_postman_id": "543fc057-4d37-46ff-8427-0881b825103f",
+    "name": "Hospital Backend (direct, port 9090)",
+    "description": "Calls the Hospital back-end service (Hospital-Service-JDK11-2.0.0.jar) directly, without MI.\nStart it first: java -jar Hospital-Service-JDK11-2.0.0.jar (listens on 9090).\nRun '1. Reserve' before '2. Fee' and '3. Payment': the reserve call saves {{appointmentNumber}}.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "backendUrl",
+      "value": "http://localhost:9090"
+    },
+    {
+      "key": "appointmentNumber",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Reserve an appointment",
+      "item": [
+        {
+          "name": "Grand Oak - surgery (thomas collins)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{backendUrl}}/grandoaks/categories/surgery/reserve",
+              "host": [
+                "{{backendUrl}}"
+              ],
+              "path": [
+                "grandoaks",
+                "categories",
+                "surgery",
+                "reserve"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient\": {\n    \"name\": \"John Doe\",\n    \"dob\": \"1940-03-19\",\n    \"ssn\": \"234-23-525\",\n    \"address\": \"California\",\n    \"phone\": \"8770586755\",\n    \"email\": \"johndoe@gmail.com\"\n  },\n  \"doctor\": \"thomas collins\",\n  \"hospital_id\": \"grandoaks\",\n  \"hospital\": \"grand oak community hospital\",\n  \"appointment_date\": \"2025-04-02\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.set('appointmentNumber', pm.response.json().appointmentNumber);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Clemency - surgery (anne clement)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{backendUrl}}/clemency/categories/surgery/reserve",
+              "host": [
+                "{{backendUrl}}"
+              ],
+              "path": [
+                "clemency",
+                "categories",
+                "surgery",
+                "reserve"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient\": {\n    \"name\": \"John Doe\",\n    \"dob\": \"1940-03-19\",\n    \"ssn\": \"234-23-525\",\n    \"address\": \"California\",\n    \"phone\": \"8770586755\",\n    \"email\": \"johndoe@gmail.com\"\n  },\n  \"doctor\": \"anne clement\",\n  \"hospital_id\": \"clemency\",\n  \"hospital\": \"clemency medical center\",\n  \"appointment_date\": \"2025-04-02\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.set('appointmentNumber', pm.response.json().appointmentNumber);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pine Valley - surgery (seth mears)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{backendUrl}}/pinevalley/categories/surgery/reserve",
+              "host": [
+                "{{backendUrl}}"
+              ],
+              "path": [
+                "pinevalley",
+                "categories",
+                "surgery",
+                "reserve"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient\": {\n    \"name\": \"John Doe\",\n    \"dob\": \"1940-03-19\",\n    \"ssn\": \"234-23-525\",\n    \"address\": \"California\",\n    \"phone\": \"8770586755\",\n    \"email\": \"johndoe@gmail.com\"\n  },\n  \"doctor\": \"seth mears\",\n  \"hospital_id\": \"pinevalley\",\n  \"hospital\": \"pine valley community hospital\",\n  \"appointment_date\": \"2025-04-02\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.set('appointmentNumber', pm.response.json().appointmentNumber);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Willow Gardens - paediatric (henry foster)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{backendUrl}}/willowgardens/categories/paediatric/reserve",
+              "host": [
+                "{{backendUrl}}"
+              ],
+              "path": [
+                "willowgardens",
+                "categories",
+                "paediatric",
+                "reserve"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient\": {\n    \"name\": \"John Doe\",\n    \"dob\": \"1940-03-19\",\n    \"ssn\": \"234-23-525\",\n    \"address\": \"California\",\n    \"phone\": \"8770586755\",\n    \"email\": \"johndoe@gmail.com\"\n  },\n  \"doctor\": \"henry foster\",\n  \"hospital_id\": \"willowgardens\",\n  \"hospital\": \"willow gardens general hospital\",\n  \"appointment_date\": \"2025-04-02\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.set('appointmentNumber', pm.response.json().appointmentNumber);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Get the appointment fee",
+      "item": [
+        {
+          "name": "Fee for {{appointmentNumber}}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{backendUrl}}/grandoaks/categories/appointments/{{appointmentNumber}}/fee",
+              "host": [
+                "{{backendUrl}}"
+              ],
+              "path": [
+                "grandoaks",
+                "categories",
+                "appointments",
+                "{{appointmentNumber}}",
+                "fee"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Settle the payment",
+      "item": [
+        {
+          "name": "Pay appointment {{appointmentNumber}}",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{backendUrl}}/healthcare/payments",
+              "host": [
+                "{{backendUrl}}"
+              ],
+              "path": [
+                "healthcare",
+                "payments"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appointmentNumber\": {{appointmentNumber}},\n  \"doctor\": {\n    \"name\": \"thomas collins\",\n    \"hospital\": \"grand oak community hospital\",\n    \"category\": \"surgery\",\n    \"availability\": \"9.00 a.m - 11.00 a.m\",\n    \"fee\": 7000.0\n  },\n  \"patient\": {\n    \"name\": \"John Doe\",\n    \"dob\": \"1940-03-19\",\n    \"ssn\": \"234-23-525\",\n    \"address\": \"California\",\n    \"phone\": \"8770586755\",\n    \"email\": \"johndoe@gmail.com\"\n  },\n  \"fee\": 7000.0,\n  \"confirmed\": \"false\",\n  \"card_number\": \"7844481124110331\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Admin - add a doctor",
+      "item": [
+        {
+          "name": "New doctor at Grand Oak",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{backendUrl}}/grandoaks/categories/admin/doctor/newdoctor",
+              "host": [
+                "{{backendUrl}}"
+              ],
+              "path": [
+                "grandoaks",
+                "categories",
+                "admin",
+                "doctor",
+                "newdoctor"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"john smith\",\n  \"category\": \"cardiology\",\n  \"availability\": \"2.00 p.m - 4.00 p.m\",\n  \"fee\": 9000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5. Doctor lists",
+      "item": [
+        {
+          "name": "Grand Oak - Physician (GET)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{backendUrl}}/grandOak/doctors/Physician",
+              "host": [
+                "{{backendUrl}}"
+              ],
+              "path": [
+                "grandOak",
+                "doctors",
+                "Physician"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pine Valley - Physician (POST)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{backendUrl}}/pineValley/doctors",
+              "host": [
+                "{{backendUrl}}"
+              ],
+              "path": [
+                "pineValley",
+                "doctors"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"doctorType\": \"Physician\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "6. Error cases",
+      "item": [
+        {
+          "name": "Unknown hospital -> 404",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{backendUrl}}/unknown/categories/surgery/reserve",
+              "host": [
+                "{{backendUrl}}"
+              ],
+              "path": [
+                "unknown",
+                "categories",
+                "surgery",
+                "reserve"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patient\": {\n    \"name\": \"John Doe\",\n    \"dob\": \"1940-03-19\",\n    \"ssn\": \"234-23-525\",\n    \"address\": \"California\",\n    \"phone\": \"8770586755\",\n    \"email\": \"johndoe@gmail.com\"\n  },\n  \"doctor\": \"thomas collins\",\n  \"hospital_id\": \"unknown\",\n  \"hospital\": \"unknown\",\n  \"appointment_date\": \"2025-04-02\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Flat payload (no patient object) -> 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{backendUrl}}/grandoaks/categories/surgery/reserve",
+              "host": [
+                "{{backendUrl}}"
+              ],
+              "path": [
+                "grandoaks",
+                "categories",
+                "surgery",
+                "reserve"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"dob\": \"1940-03-19\",\n  \"doctor\": \"thomas collins\",\n  \"hospital_id\": \"grandoaks\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Unknown appointment -> 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{backendUrl}}/grandoaks/categories/appointments/999/fee",
+              "host": [
+                "{{backendUrl}}"
+              ],
+              "path": [
+                "grandoaks",
+                "categories",
+                "appointments",
+                "999",
+                "fee"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Payment without fee -> 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{backendUrl}}/healthcare/payments",
+              "host": [
+                "{{backendUrl}}"
+              ],
+              "path": [
+                "healthcare",
+                "payments"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appointmentNumber\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
