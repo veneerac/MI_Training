@@ -10,6 +10,7 @@ Files needed for the 4-day MI 4.6.0 training labs.
 | `Hospital Backend/` | `Hospital-Service-JDK11-2.0.0.jar` | Sample Hospital backend used by the mediation labs. Run `java -jar Hospital-Service-JDK11-2.0.0.jar` (port 9090). Tested on JDK 21. Source code is in `source/` (build with `mvn package`). |
 | `ISO8583 Test Server/` | Test host, test client and libraries | ISO 8583 test host (port 5010) and test client for the ISO 8583 lab. See its README. |
 | `ISO8583 Connector/` | `iso8583-connector-1.0.4.zip`, `mi-inbound-iso8583-1.1.5.zip` | Official ISO8583 connector and inbound endpoint releases, for offline or manual deployment. See its README. |
+| `Day 3 CAR Files/` | `.car` files | Ready-to-deploy CAR files for the Day 3 labs: Troubleshooting Session 01 (BankStatementService), Lab 18 (OrderStatusService 1.0.0 and 2.0.0) and Lab 20 (OrderStatusService, OrderTestBroken). Copy a CAR to `MI_HOME/repository/deployment/server/carbonapps`. |
 
 Requires JDK 21 (MI 4.6.0 is tested with JDK 21 and 25) and MySQL Server 8.0 or later.
 
