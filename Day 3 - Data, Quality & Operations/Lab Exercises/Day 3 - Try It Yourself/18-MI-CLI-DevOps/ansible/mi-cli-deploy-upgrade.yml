@@ -1,0 +1,117 @@
+# Lab 18 as a playbook: deploy OrderStatusService 1.0.0 with the MI CLI + Management API, check it,
+# switch the endpoint off and on, then upgrade to 2.0.0.
+# Run in this lab folder (the folder that holds cars/ and ansible/):
+#   ansible-playbook ansible/mi-cli-deploy-upgrade.yml -e mi_password=<password>
+# Needs the `mi` CLI on the PATH and a running MI (Management API on 9164, passthrough on 8290).
+- name: MI CLI - deploy, control and upgrade OrderStatusService
+  hosts: localhost
+  gather_facts: false
+  vars:
+    env_name: dev
+    mi_mgmt: https://localhost:9164/management
+    mi_api: http://localhost:8290/orders/1001
+    mi_user: admin
+    cars_dir: "{{ playbook_dir }}/../cars"
+    app: OrderStatusService
+    deploy_wait: 25            # MI hot-deploys the CAR; wait before checking
+
+  tasks:
+    # ---- 1. connect -------------------------------------------------------------
+    - name: Register the environment (ignore "already exists")
+      ansible.builtin.command: mi add env {{ env_name }} {{ mi_mgmt | regex_replace('/management$', '') }}
+      register: add_env
+      failed_when: add_env.rc != 0 and 'already' not in (add_env.stdout + add_env.stderr)
+      changed_when: add_env.rc == 0
+
+    - name: Log in (-k = accept the self-signed certificate)
+      ansible.builtin.command: mi login {{ env_name }} -u {{ mi_user }} -p {{ mi_password }} -k
+      no_log: true
+      changed_when: false
+
+    # ---- 2. deploy 1.0.0 (the CLI cannot deploy a CAR: use the Management API) ---
+    - name: Get a Management API token
+      ansible.builtin.uri:
+        url: "{{ mi_mgmt }}/login"
+        user: "{{ mi_user }}"
+        password: "{{ mi_password }}"
+        force_basic_auth: true
+        validate_certs: false
+      register: login
+      no_log: true
+
+    - name: Deploy 1.0.0
+      ansible.builtin.uri:
+        url: "{{ mi_mgmt }}/applications"
+        method: POST
+        headers: { Authorization: "Bearer {{ login.json.AccessToken }}" }
+        body_format: form-multipart
+        body:
+          file: { filename: "{{ cars_dir }}/{{ app }}_1.0.0.car", mime_type: application/octet-stream }
+        validate_certs: false
+
+    - name: Wait for the hot deployment
+      ansible.builtin.pause: { seconds: "{{ deploy_wait }}" }
+
+    - name: Show the deployed composite apps
+      ansible.builtin.command: mi get composite-apps -e {{ env_name }} -k
+      register: capps
+      changed_when: false
+
+    - name: Fail if 1.0.0 is not deployed
+      ansible.builtin.assert:
+        that: "'1.0.0' in capps.stdout and app in capps.stdout"
+        fail_msg: "{{ app }} 1.0.0 is not deployed: {{ capps.stdout }}"
+
+    - name: Call the API (expect version 1.0.0)
+      ansible.builtin.uri: { url: "{{ mi_api }}", return_content: true }
+      register: v1
+      failed_when: v1.json.version != '1.0.0'
+
+    # ---- 3. switch the endpoint off and on ---------------------------------------
+    - name: Deactivate the endpoint
+      ansible.builtin.command: mi deactivate endpoint OrderBackendEP -e {{ env_name }} -k
+      changed_when: true
+
+    - name: Call the API (expect 503)
+      ansible.builtin.uri: { url: "{{ mi_api }}", status_code: 503 }
+
+    - name: Activate the endpoint
+      ansible.builtin.command: mi activate endpoint OrderBackendEP -e {{ env_name }} -k
+      changed_when: true
+
+    - name: Call the API (expect 200 again)
+      ansible.builtin.uri: { url: "{{ mi_api }}" }
+
+    # ---- 4. upgrade to 2.0.0: remove 1.0.0 first (same API names cannot run twice)
+    - name: Remove 1.0.0
+      ansible.builtin.uri:
+        url: "{{ mi_mgmt }}/applications/{{ app }}_1.0.0"
+        method: DELETE
+        headers: { Authorization: "Bearer {{ login.json.AccessToken }}" }
+        validate_certs: false
+
+    - name: Wait for the undeploy
+      ansible.builtin.pause: { seconds: "{{ deploy_wait }}" }
+
+    - name: Deploy 2.0.0
+      ansible.builtin.uri:
+        url: "{{ mi_mgmt }}/applications"
+        method: POST
+        headers: { Authorization: "Bearer {{ login.json.AccessToken }}" }
+        body_format: form-multipart
+        body:
+          file: { filename: "{{ cars_dir }}/{{ app }}_2.0.0.car", mime_type: application/octet-stream }
+        validate_certs: false
+
+    - name: Wait for the hot deployment
+      ansible.builtin.pause: { seconds: "{{ deploy_wait }}" }
+
+    - name: Call the API (expect version 2.0.0)
+      ansible.builtin.uri: { url: "{{ mi_api }}", return_content: true }
+      register: v2
+      failed_when: v2.json.version != '2.0.0'
+
+    # ---- 5. disconnect -----------------------------------------------------------
+    - name: Log out
+      ansible.builtin.command: mi logout {{ env_name }} -k
+      changed_when: false
