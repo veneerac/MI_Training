@@ -1,0 +1,53 @@
+# Remove every faulty CApp from an MI node through the Management API, then wait until the node is ready.
+# Run:  ansible-playbook remove-faulty-capps.yml -e mi_password=<password>
+- name: Remove faulty CApps and check readiness
+  hosts: localhost
+  gather_facts: false
+  vars:
+    mi_mgmt: https://localhost:9164/management
+    mi_health: http://localhost:9201/healthz
+    mi_user: admin
+
+  tasks:
+    - name: Get a Management API token
+      ansible.builtin.uri:
+        url: "{{ mi_mgmt }}/login"
+        user: "{{ mi_user }}"
+        password: "{{ mi_password }}"
+        force_basic_auth: true
+        validate_certs: false          # training MI: self-signed certificate
+      register: login
+
+    - name: List the carbon applications
+      ansible.builtin.uri:
+        url: "{{ mi_mgmt }}/applications"
+        headers: { Authorization: "Bearer {{ login.json.AccessToken }}" }
+        validate_certs: false
+      register: capps
+
+    - name: Show what is deployed
+      ansible.builtin.debug:
+        msg: "active: {{ capps.json.activeList | map(attribute='name') | list }}  faulty: {{ capps.json.faultyList | map(attribute='name') | list }}"
+
+    - name: Remove each faulty CApp
+      ansible.builtin.uri:
+        url: "{{ mi_mgmt }}/applications/{{ item.name }}_{{ item.version }}"
+        method: DELETE
+        headers: { Authorization: "Bearer {{ login.json.AccessToken }}" }
+        validate_certs: false
+      loop: "{{ capps.json.faultyList }}"
+      loop_control: { label: "{{ item.name }}_{{ item.version }}" }
+
+    - name: Wait until the node is ready
+      ansible.builtin.uri:
+        url: "{{ mi_health }}"
+      register: health
+      until: health.status == 200
+      retries: 12
+      delay: 5
+
+    - name: Log out
+      ansible.builtin.uri:
+        url: "{{ mi_mgmt }}/logout"
+        headers: { Authorization: "Bearer {{ login.json.AccessToken }}" }
+        validate_certs: false
