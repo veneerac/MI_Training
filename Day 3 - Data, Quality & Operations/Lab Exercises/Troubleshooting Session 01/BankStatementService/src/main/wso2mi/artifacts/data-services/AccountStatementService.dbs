@@ -1,0 +1,41 @@
+<data name="AccountStatementService" serviceNamespace="http://bank.training/accounts" transports="http https">
+    <description>Account details and monthly statements from the core banking database.</description>
+    <config id="BankDS">
+        <property name="driverClassName">com.mysql.cj.jdbc.Driver</property>
+        <property name="url">jdbc:mysql://localhost:3306/bankdb</property>
+        <property name="username">bankuser</property>
+        <property name="password">bankuser</property>
+        <property name="initialSize">2</property>
+        <property name="maxActive">5</property>
+        <property name="validationQuery">SELECT 1</property>
+    </config>
+
+    <query id="getAccount" useConfig="BankDS">
+        <sql>SELECT AccountNo, CustomerName, Branch, AccountType, Balance FROM Accounts WHERE AccountNo = ?</sql>
+        <result outputType="json">{"Account": {"AccountNo": "$AccountNo", "CustomerName": "$CustomerName",
+            "Branch": "$Branch", "AccountType": "$AccountType", "Balance": "$Balance"}}</result>
+        <param name="AccountNo" sqlType="STRING"/>
+    </query>
+
+    <!-- The statement report is slow on the core banking database (about 3 seconds).
+         SLEEP(3) stands in for that work so the lab behaves the same on every machine. -->
+    <query id="getStatement" useConfig="BankDS">
+        <sql>SELECT t.TxnId, DATE_FORMAT(t.TxnDate, '%Y-%m-%d') AS TxnDate, t.TxnType, t.Amount, t.Description
+             FROM Transactions t, (SELECT SLEEP(3) AS slow) report
+             WHERE t.AccountNo = ? ORDER BY t.TxnDate</sql>
+        <result outputType="json">{"Statement": {"Transaction": [{"TxnId": "$TxnId", "Date": "$TxnDate",
+            "Type": "$TxnType", "Amount": "$Amount", "Description": "$Description"}]}}</result>
+        <param name="AccountNo" sqlType="STRING"/>
+    </query>
+
+    <resource method="GET" path="account/{AccountNo}">
+        <call-query href="getAccount">
+            <with-param name="AccountNo" query-param="AccountNo"/>
+        </call-query>
+    </resource>
+    <resource method="GET" path="statement/{AccountNo}">
+        <call-query href="getStatement">
+            <with-param name="AccountNo" query-param="AccountNo"/>
+        </call-query>
+    </resource>
+</data>
