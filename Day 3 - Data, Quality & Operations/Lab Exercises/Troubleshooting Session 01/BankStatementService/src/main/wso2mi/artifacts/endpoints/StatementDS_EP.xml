@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The AccountStatementService data service (statement of an account). -->
+<endpoint name="StatementDS_EP" xmlns="http://ws.apache.org/ns/synapse">
+    <http method="get" uri-template="http://localhost:8290/services/AccountStatementService/statement/{uri.var.accountNo}"/>
+</endpoint>

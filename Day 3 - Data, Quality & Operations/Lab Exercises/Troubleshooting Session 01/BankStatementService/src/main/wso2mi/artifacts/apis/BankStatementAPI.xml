@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The bank API for the channels (web, mobile). It calls the AccountStatementService data service and returns JSON. -->
+<api context="/bank" name="BankStatementAPI" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="GET" uri-template="/statement/{accountNo}">
+        <inSequence>
+            <log category="INFO" level="custom">
+                <property name="MESSAGE" value="Statement request"/>
+                <property name="accountNo" expression="get-property('uri.var.accountNo')"/>
+            </log>
+            <header name="Accept" value="application/json" scope="transport"/>
+            <call>
+                <endpoint key="StatementDS_EP"/>
+            </call>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+            <log category="ERROR" level="custom">
+                <property name="MESSAGE" value="Data service not reachable"/>
+                <property name="ERROR_MESSAGE" expression="get-property('ERROR_MESSAGE')"/>
+            </log>
+            <payloadFactory media-type="json">
+                <format>{"error": "Statement service is not available, try again later"}</format>
+                <args/>
+            </payloadFactory>
+            <property name="HTTP_SC" value="503" scope="axis2"/>
+            <respond/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" uri-template="/account/{accountNo}">
+        <inSequence>
+            <header name="Accept" value="application/json" scope="transport"/>
+            <call>
+                <endpoint key="AccountDS_EP"/>
+            </call>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+            <payloadFactory media-type="json">
+                <format>{"error": "Account service is not available, try again later"}</format>
+                <args/>
+            </payloadFactory>
+            <property name="HTTP_SC" value="503" scope="axis2"/>
+            <respond/>
+        </faultSequence>
+    </resource>
+</api>
